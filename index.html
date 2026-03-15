@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CNHS SHS Enrollment | Official Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #0a4f8c;
+  --primary-light: #1a6dbf;
+  --primary-glow: rgba(26,109,191,0.35);
+  --gold: #d4a017;
+  --gold-light: #f0c84a;
+  --gold-glow: rgba(212,160,23,0.3);
+  --surface: rgba(255,255,255,0.10);
+  --border: rgba(255,255,255,0.20);
+  --border-strong: rgba(255,255,255,0.35);
+  --text-white: #ffffff;
+  --text-soft: rgba(255,255,255,0.75);
+  --text-dark: #0f172a;
+  --text-mid: #334155;
+  --input-bg: rgba(255,255,255,0.92);
+  --input-border: rgba(10,79,140,0.2);
+  --error: #e74c3c;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #041e3a;
+  color: var(--text-dark);
+  position: relative;
+}
+
+.bg-layer {
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 20%, rgba(26,109,191,0.45) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 90% 80%, rgba(10,79,140,0.5) 0%, transparent 55%),
+    url("images/background.png") center/cover no-repeat;
+}
+.bg-layer::before {
+  content:""; position:absolute; inset:0;
+  background: linear-gradient(160deg, rgba(10,79,140,0.65) 0%, rgba(4,20,45,0.88) 100%);
+}
+
+.orb { position:fixed; border-radius:50%; filter:blur(80px); z-index:0; pointer-events:none; animation:orbFloat 18s ease-in-out infinite alternate; }
+.orb-1 { width:500px; height:500px; background:radial-gradient(circle,rgba(26,109,191,0.4),transparent); top:-10%; left:-8%; }
+.orb-2 { width:400px; height:400px; background:radial-gradient(circle,rgba(212,160,23,0.2),transparent); bottom:-5%; right:-5%; animation-delay:-6s; }
+.orb-3 { width:300px; height:300px; background:radial-gradient(circle,rgba(26,109,191,0.25),transparent); top:40%; right:10%; animation-delay:-12s; }
+@keyframes orbFloat { 0%{transform:translate(0,0) scale(1)} 100%{transform:translate(40px,30px) scale(1.15)} }
+
+/* ── TOP HEADER ── */
+.top-header {
+  position:relative; z-index:10;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 40px; margin:18px auto 0; width:93%; max-width:1200px;
+  background:rgba(255,255,255,0.07); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+  border-radius:20px; border:1px solid var(--border-strong);
+  box-shadow:0 8px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12);
+  flex-direction:column; gap:10px;
+}
+
+/* Top row: logos + title */
+.header-top-row {
+  display:flex; align-items:center; justify-content:space-between; width:100%;
+}
+
+.header-logo { height:64px; background:white; padding:5px; border-radius:14px; box-shadow:0 6px 20px rgba(0,0,0,0.25); transition:transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275); }
+.header-logo:hover { transform:translateY(-4px) rotate(6deg) scale(1.08); }
+.header-title { text-align:center; }
+.header-title h1 { font-family:'Playfair Display',serif; font-size:1.25rem; font-weight:800; color:var(--text-white); letter-spacing:0.5px; text-shadow:0 2px 12px rgba(0,0,0,0.4); }
+.header-title p { font-size:0.78rem; color:var(--gold-light); font-weight:600; letter-spacing:2px; text-transform:uppercase; margin-top:3px; }
+
+/* ── COUNTDOWN TIMER STRIP (inside header, below title) ── */
+#enrollmentCountdownStrip {
+  width:100%;
+  display:flex; align-items:center; justify-content:center; gap:14px;
+  background:rgba(220,38,38,0.12);
+  border:1px solid rgba(220,38,38,0.25);
+  border-radius:12px;
+  padding:10px 20px;
+}
+#enrollmentCountdownStrip .cd-label {
+  font-size:11px; font-weight:800; color:#fca5a5;
+  text-transform:uppercase; letter-spacing:.1em; white-space:nowrap;
+}
+.cd-units {
+  display:flex; align-items:center; gap:5px;
+}
+.cd-unit {
+  text-align:center; line-height:1.1;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:8px; padding:4px 10px; min-width:48px;
+}
+.cd-unit .cd-num {
+  font-family:'Plus Jakarta Sans',sans-serif; font-weight:800;
+  font-size:20px; color:#fff; display:block; line-height:1.1;
+}
+.cd-unit .cd-sub {
+  font-size:9px; color:rgba(255,255,255,0.45);
+  letter-spacing:.1em; text-transform:uppercase; display:block;
+}
+.cd-sep { font-size:20px; font-weight:800; color:rgba(220,38,38,0.7); margin-bottom:8px; }
+
+/* ── PROGRESS ── */
+.progress-wrap { position:relative; z-index:10; width:88%; max-width:580px; margin:16px auto 0; }
+.progress-track { background:rgba(255,255,255,0.12); height:6px; border-radius:10px; overflow:hidden; }
+#progressBar { height:100%; width:25%; background:linear-gradient(90deg,var(--gold),var(--gold-light)); box-shadow:0 0 12px var(--gold-glow); border-radius:10px; transition:width 0.6s cubic-bezier(0.4,0,0.2,1); }
+.progress-steps { display:flex; justify-content:space-between; margin-top:8px; padding:0 2px; }
+.progress-steps span { font-size:0.68rem; font-weight:600; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.5px; transition:color 0.3s; }
+.progress-steps span.active { color:var(--gold-light); }
+
+.container { position:relative; z-index:10; flex:1; padding:24px 16px 40px; }
+
+/* ── ENROLLMENT CLOSED SCREEN ── */
+#closedScreen {
+  display:none; max-width:560px; margin:0 auto;
+  background:rgba(255,255,255,0.97); border-radius:28px; overflow:hidden;
+  box-shadow:0 40px 90px rgba(0,0,0,0.35);
+}
+#closedScreen.active { display:block; animation:slideUp 0.6s cubic-bezier(0.22,1,0.36,1); }
+.closed-top { background:linear-gradient(135deg,#7f1d1d,#dc2626); padding:48px 40px 40px; text-align:center; }
+.closed-top .closed-icon { font-size:56px; margin-bottom:16px; display:block; }
+.closed-top h2 { font-family:'Playfair Display',serif; font-size:1.8rem; color:#fff; margin-bottom:6px; }
+.closed-top p { color:rgba(255,255,255,0.8); font-size:0.92rem; }
+.closed-body { padding:32px 40px 44px; text-align:center; }
+.closed-body p { font-size:0.95rem; color:#334155; line-height:1.7; margin-bottom:20px; }
+
+.form-step { display:none; max-width:720px; margin:0 auto; background:rgba(255,255,255,0.97); border-radius:28px; box-shadow:0 32px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.5); overflow:hidden; }
+.form-step.active { display:block; animation:slideUp 0.55s cubic-bezier(0.22,1,0.36,1); }
+@keyframes slideUp { from{opacity:0;transform:translateY(28px) scale(0.985)} to{opacity:1;transform:translateY(0) scale(1)} }
+
+.card-accent { height:5px; background:linear-gradient(90deg, var(--primary), var(--primary-light), var(--gold)); }
+.card-body { padding:44px 48px 48px; }
+
+.step-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(10,79,140,0.07); border:1px solid rgba(10,79,140,0.14); border-radius:30px; padding:4px 12px 4px 8px; margin-bottom:16px; }
+.step-badge-dot { width:8px; height:8px; background:var(--primary-light); border-radius:50%; animation:pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.45;transform:scale(0.8)} }
+.step-badge span { font-size:0.72rem; font-weight:700; color:var(--primary); letter-spacing:1px; text-transform:uppercase; }
+
+h2 { font-family:'Playfair Display',serif; font-size:1.9rem; font-weight:800; color:var(--primary); margin-bottom:5px; line-height:1.2; }
+.step-subtitle { font-size:0.9rem; color:#64748b; margin-bottom:28px; font-weight:400; }
+
+.field-row { margin-bottom:20px; }
+.field-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.field-grid-lrn { display:grid; grid-template-columns:1.5fr 1fr; gap:16px; }
+
+label { display:block; font-size:0.75rem; font-weight:700; color:var(--text-mid); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:7px; }
+label .req { color:var(--error); margin-left:2px; }
+
+.input-wrap { position:relative; }
+.input-icon { position:absolute; left:14px; top:50%; transform:translateY(-50%); font-size:0.95rem; pointer-events:none; opacity:0.4; }
+.input-icon-ta { top:15px; transform:none; }
+
+input, select, textarea {
+  width:100%; padding:13px 16px 13px 42px;
+  background:var(--input-bg); border:1.5px solid var(--input-border);
+  border-radius:12px; font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:0.94rem; color:var(--text-dark);
+  transition:border-color 0.25s, box-shadow 0.25s, background 0.25s;
+  outline:none; -webkit-appearance:none; appearance:none;
+}
+input:focus, select:focus, textarea:focus {
+  border-color:var(--primary-light); background:#fff;
+  box-shadow:0 0 0 4px rgba(26,109,191,0.1);
+}
+input.error, select.error { border-color:var(--error); box-shadow:0 0 0 3px rgba(231,76,60,0.1); }
+select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; padding-right:40px; }
+textarea { resize:vertical; min-height:90px; padding-top:13px; }
+
+.field-divider { display:flex; align-items:center; gap:12px; margin:24px 0 20px; }
+.field-divider::before,.field-divider::after { content:""; flex:1; height:1px; background:rgba(10,79,140,0.1); }
+.field-divider span { font-size:0.72rem; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; white-space:nowrap; }
+
+.btn-row { display:flex; justify-content:flex-end; align-items:center; gap:10px; margin-top:32px; padding-top:24px; border-top:1px solid rgba(10,79,140,0.08); }
+.btn-row-center { justify-content:center; }
+
+button { font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:0.88rem; letter-spacing:0.8px; text-transform:uppercase; border:none; cursor:pointer; border-radius:50px; padding:14px 32px; transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275); }
+.btn-primary { background:linear-gradient(135deg,var(--primary-light),var(--primary)); color:white; box-shadow:0 8px 24px var(--primary-glow); }
+.btn-primary:hover { transform:translateY(-2px) scale(1.02); box-shadow:0 12px 32px var(--primary-glow); }
+.btn-success { background:linear-gradient(135deg,#22c55e,#16a34a); color:white; box-shadow:0 8px 24px rgba(34,197,94,0.3); }
+.btn-success:hover { transform:translateY(-2px) scale(1.02); box-shadow:0 12px 32px rgba(34,197,94,0.4); }
+.btn-ghost { background:rgba(100,116,139,0.1); color:#64748b; border:1.5px solid rgba(100,116,139,0.2); box-shadow:none; }
+.btn-ghost:hover { background:rgba(100,116,139,0.18); transform:translateY(-1px); }
+.btn-large { padding:17px 44px; font-size:1rem; letter-spacing:1px; }
+
+.notice-banner { display:flex; align-items:flex-start; gap:12px; background:linear-gradient(135deg,rgba(212,160,23,0.08),rgba(240,200,74,0.04)); border:1.5px solid rgba(212,160,23,0.35); border-radius:14px; padding:14px 18px; margin-bottom:24px; }
+.notice-icon { font-size:1.1rem; flex-shrink:0; margin-top:1px; }
+.notice-banner p { font-size:0.84rem; color:#7a5500; font-weight:600; line-height:1.6; }
+
+.welcome-wrap { text-align:center; padding:10px 0 4px; }
+.welcome-wrap h1 { font-family:'Playfair Display',serif; font-size:2.6rem; font-weight:800; color:var(--primary); line-height:1.15; margin-bottom:14px; }
+.welcome-wrap h1 span { color:var(--gold); }
+.welcome-sub { font-size:1rem; color:#475569; line-height:1.75; max-width:440px; margin:0 auto 28px; font-weight:400; }
+
+.review-grid { background:linear-gradient(135deg,rgba(10,79,140,0.04),rgba(26,109,191,0.02)); border:1.5px solid rgba(10,79,140,0.1); border-radius:16px; overflow:hidden; margin-bottom:20px; }
+.review-row { display:flex; padding:12px 20px; gap:16px; border-bottom:1px solid rgba(10,79,140,0.07); align-items:baseline; }
+.review-row:last-child { border-bottom:none; }
+.review-row:nth-child(even) { background:rgba(10,79,140,0.025); }
+.review-label { font-size:0.72rem; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.8px; min-width:130px; flex-shrink:0; }
+.review-value { font-size:0.92rem; color:var(--text-dark); font-weight:500; flex:1; }
+.cert-box { background:linear-gradient(135deg,rgba(212,160,23,0.07),rgba(240,200,74,0.04)); border:1.5px solid rgba(212,160,23,0.3); border-radius:12px; padding:14px 18px; margin-bottom:24px; font-size:0.83rem; color:#78490a; font-weight:600; line-height:1.6; }
+
+#successScreen { display:none; max-width:580px; margin:0 auto; background:rgba(255,255,255,0.97); border-radius:28px; overflow:hidden; box-shadow:0 40px 90px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.5); }
+#successScreen.active { display:block; animation:slideUp 0.6s cubic-bezier(0.22,1,0.36,1); }
+
+.success-top { background:linear-gradient(135deg,var(--primary),var(--primary-light)); padding:48px 40px 40px; text-align:center; position:relative; overflow:hidden; }
+.success-top::before { content:""; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 0%,rgba(212,160,23,0.2),transparent 60%); }
+.check-ring { width:84px; height:84px; background:rgba(255,255,255,0.15); border:3px solid rgba(255,255,255,0.4); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px; font-size:2.4rem; animation:popIn 0.55s cubic-bezier(0.175,0.885,0.32,1.275) 0.2s both; position:relative; z-index:1; }
+@keyframes popIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+.success-top h2 { font-family:'Playfair Display',serif; font-size:1.8rem; color:white; margin-bottom:6px; position:relative; z-index:1; }
+.success-top p { color:rgba(255,255,255,0.8); font-size:0.92rem; position:relative; z-index:1; }
+
+.success-body { padding:36px 40px 44px; text-align:center; }
+.ref-box { background:linear-gradient(135deg,rgba(10,79,140,0.06),rgba(26,109,191,0.03)); border:2px solid rgba(10,79,140,0.18); border-radius:16px; padding:20px 24px; margin:20px 0 24px; }
+.ref-label { font-size:0.7rem; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:6px; }
+.ref-code { font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:800; color:var(--primary); letter-spacing:3px; }
+
+.next-steps-box { background:rgba(10,79,140,0.04); border:1.5px solid rgba(10,79,140,0.12); border-radius:14px; padding:18px 22px; margin-bottom:24px; text-align:left; }
+.ns-title { font-size:0.78rem; font-weight:800; color:var(--primary); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; }
+.ns-item { display:flex; align-items:flex-start; gap:10px; margin-bottom:8px; font-size:0.88rem; color:var(--text-mid); font-weight:500; }
+.ns-num { width:22px; height:22px; background:var(--primary); color:white; border-radius:50%; font-size:0.72rem; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+
+.site-footer { position:relative; z-index:10; text-align:center; padding:32px; font-size:0.82rem; color:rgba(255,255,255,0.4); font-weight:500; }
+
+#submitOverlay { display:none; position:fixed; inset:0; background:rgba(4,20,45,0.82); backdrop-filter:blur(8px); z-index:9999; align-items:center; justify-content:center; flex-direction:column; gap:16px; }
+#submitOverlay.show { display:flex; }
+.spinner { width:52px; height:52px; border:4px solid rgba(255,255,255,0.2); border-top-color:var(--gold-light); border-radius:50%; animation:spin 0.75s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
+#overlayMsg { color:white; font-size:1rem; font-weight:600; letter-spacing:0.5px; }
+
+@media(max-width:640px) {
+  .card-body { padding:28px 22px 32px; }
+  .field-grid-2,.field-grid-lrn { grid-template-columns:1fr; }
+  .top-header { padding:12px 16px; }
+  .header-logo { height:48px; }
+  .header-title h1 { font-size:1rem; }
+  .welcome-wrap h1 { font-size:1.9rem; }
+  .success-top { padding:36px 24px 32px; }
+  .success-body { padding:28px 24px 36px; }
+  .review-label { min-width:100px; }
+  .cd-unit { min-width:38px; padding:4px 6px; }
+  .cd-unit .cd-num { font-size:16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-layer"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<div id="submitOverlay">
+  <div class="spinner"></div>
+  <p id="overlayMsg">Saving registration...</p>
+</div>
+
+<!-- ══ HEADER with Senior High School title + countdown ══ -->
+<header class="top-header" id="mainHeader">
+  <div class="header-top-row">
+    <img src="images/logo1.png" class="header-logo" alt="CNHS Logo">
+    <div class="header-title">
+      <h1>CNHS Senior High School</h1>
+      <p>SHS Enrollment Portal</p>
+    </div>
+    <img src="images/logo2.png" class="header-logo" alt="DepEd Logo">
+  </div>
+
+  <!-- ⏱ Test Mode Countdown — visible below the title -->
+  <div id="enrollmentCountdownStrip">
+    <span class="cd-label">⏱ Enrollment Test Mode Ends In</span>
+    <div class="cd-units">
+      <div class="cd-unit"><span class="cd-num" id="fcd-D">--</span><span class="cd-sub">Days</span></div>
+      <span class="cd-sep">:</span>
+      <div class="cd-unit"><span class="cd-num" id="fcd-H">--</span><span class="cd-sub">Hours</span></div>
+      <span class="cd-sep">:</span>
+      <div class="cd-unit"><span class="cd-num" id="fcd-M">--</span><span class="cd-sub">Mins</span></div>
+      <span class="cd-sep">:</span>
+      <div class="cd-unit"><span class="cd-num" id="fcd-S">--</span><span class="cd-sub">Secs</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="progress-wrap" id="progressWrap">
+  <div class="progress-track"><div id="progressBar"></div></div>
+  <div class="progress-steps">
+    <span id="ps0" class="active">Welcome</span>
+    <span id="ps1">Personal Info</span>
+    <span id="ps2">Academics</span>
+    <span id="ps3">Review</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ══ ENROLLMENT CLOSED ══ -->
+  <div id="closedScreen">
+    <div class="closed-top">
+      <span class="closed-icon">🔒</span>
+      <h2>Enrollment is Closed</h2>
+      <p>The enrollment period for this school year has ended.</p>
+    </div>
+    <div class="closed-body">
+      <p>The SHS enrollment system is currently closed. New registrations are no longer being accepted at this time.</p>
+      <p>If you believe this is an error or have questions, please visit the school registrar's office in person.</p>
+      <p style="font-size:0.85rem;color:#94a3b8;margin-top:16px;">© 2026 Concepcion National High School</p>
+    </div>
+  </div>
+
+  <!-- STEP 0 -->
+  <section class="form-step active" id="step0">
+    <div class="card-accent"></div>
+    <div class="card-body">
+      <div class="welcome-wrap">
+        <h1>Ready to <span>Join</span> Us?</h1>
+        <p class="welcome-sub">Fill out this form to pre-register for Senior High School. It only takes a few minutes.</p>
+        <div class="notice-banner" style="max-width:480px;margin:0 auto 32px;text-align:left;">
+          <span class="notice-icon">📋</span>
+          <p>Prepare your <strong>Grade 10 Report Card</strong> and <strong>Form 137</strong> — you'll need to bring them to the registrar's office after submitting.</p>
+        </div>
+        <button class="btn-primary btn-large" id="startBtn">Start Registration →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="form-step" id="step1">
+    <div class="card-accent"></div>
+    <div class="card-body">
+      <div class="step-badge"><div class="step-badge-dot"></div><span>Step 1 of 3</span></div>
+      <h2>Student Information</h2>
+      <p class="step-subtitle">Fill in your personal details exactly as they appear on official documents.</p>
+      <div class="field-row">
+        <label>Full Name <span class="req">*</span></label>
+        <div class="input-wrap">
+          <span class="input-icon">👤</span>
+          <input id="fullName" placeholder="Last Name, First Name, M.I." required>
+        </div>
+      </div>
+      <div class="field-grid-2">
+        <div class="field-row">
+          <label>Age <span class="req">*</span></label>
+          <div class="input-wrap">
+            <span class="input-icon">🎂</span>
+            <input id="age" type="number" min="14" max="25" placeholder="e.g. 16" required>
+          </div>
+        </div>
+        <div class="field-row">
+          <label>Date of Birth <span class="req">*</span></label>
+          <div class="input-wrap">
+            <span class="input-icon">📅</span>
+            <input id="birthday" type="date" required>
+          </div>
+        </div>
+      </div>
+      <div class="field-grid-lrn">
+        <div class="field-row">
+          <label>Learner Reference Number (LRN) <span class="req">*</span></label>
+          <div class="input-wrap">
+            <span class="input-icon">🔢</span>
+            <input id="lrn" maxlength="12" placeholder="12-digit LRN" required>
+          </div>
+        </div>
+        <div class="field-row">
+          <label>Gender <span class="req">*</span></label>
+          <div class="input-wrap">
+            <span class="input-icon">⚧</span>
+            <select id="gender" required>
+              <option value="">-- Select --</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="field-divider"><span>Contact Information</span></div>
+      <div class="field-row">
+        <label>Gmail Address <span class="req">*</span></label>
+        <div class="input-wrap">
+          <span class="input-icon">✉️</span>
+          <input id="gmail" type="email" placeholder="yourname@gmail.com" required>
+        </div>
+        <small style="display:block;margin-top:6px;font-size:0.75rem;color:#64748b;">⚠️ Use a valid Gmail — your acceptance notice will be sent here.</small>
+      </div>
+      <div class="field-divider"><span>Home Address</span></div>
+      <div class="field-row">
+        <label>House No. / Street <span class="req">*</span></label>
+        <div class="input-wrap">
+          <span class="input-icon">🏠</span>
+          <input id="street" placeholder="e.g. 123 Rizal St." required>
+        </div>
+      </div>
+      <div class="field-grid-2">
+        <div class="field-row">
+          <label>Barangay <span class="req">*</span></label>
+          <div class="input-wrap"><span class="input-icon">📍</span><input id="barangay" placeholder="Barangay name" required></div>
+        </div>
+        <div class="field-row">
+          <label>Municipality / City <span class="req">*</span></label>
+          <div class="input-wrap"><span class="input-icon">🏙️</span><input id="municipality" placeholder="Municipality or City" required></div>
+        </div>
+      </div>
+      <div class="field-grid-2">
+        <div class="field-row">
+          <label>Province <span class="req">*</span></label>
+          <div class="input-wrap"><span class="input-icon">🗺️</span><input id="province" placeholder="Province" required></div>
+        </div>
+        <div class="field-row">
+          <label>ZIP Code</label>
+          <div class="input-wrap"><span class="input-icon">📮</span><input id="zipCode" placeholder="ZIP Code" maxlength="4"></div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-ghost" id="back1">← Back</button>
+        <button class="btn-primary" id="next1">Next Step →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="form-step" id="step2">
+    <div class="card-accent"></div>
+    <div class="card-body">
+      <div class="step-badge"><div class="step-badge-dot"></div><span>Step 2 of 3</span></div>
+      <h2>Academic Details</h2>
+      <p class="step-subtitle">Choose your strand and grade level for the coming school year.</p>
+      <div class="notice-banner">
+        <span class="notice-icon">📁</span>
+        <p>Document upload is temporarily unavailable. Please bring your <strong>Report Card</strong> and <strong>Form 137</strong> to the registrar's office after submitting.</p>
+      </div>
+      <div class="field-row">
+        <label>Preferred Strand <span class="req">*</span></label>
+        <div class="input-wrap">
+          <span class="input-icon">🎓</span>
+          <select id="strand" required>
+            <option value="">-- Select Strand --</option>
+            <option value="ABM">ABM – Accountancy &amp; Business</option>
+            <option value="HUMSS">HUMSS – Humanities &amp; Social Sciences</option>
+            <option value="ICT">ICT – Tech &amp; Communication</option>
+            <option value="Home Economics">HE – Home Economics</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <label>Grade Level <span class="req">*</span></label>
+        <div class="input-wrap">
+          <span class="input-icon">📚</span>
+          <select id="gradeLevel" required>
+            <option value="">-- Select Grade --</option>
+            <option value="Grade 11">Grade 11</option>
+            <option value="Grade 12">Grade 12</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <label>Strand Interest Statement</label>
+        <div class="input-wrap">
+          <span class="input-icon input-icon-ta">✏️</span>
+          <textarea id="interviewReason" placeholder="Briefly explain why you chose this strand..."></textarea>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-ghost" id="back2">← Back</button>
+        <button class="btn-primary" id="next2">Review &amp; Submit →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="form-step" id="step3">
+    <div class="card-accent"></div>
+    <div class="card-body">
+      <div class="step-badge"><div class="step-badge-dot"></div><span>Step 3 of 3</span></div>
+      <h2>Final Confirmation</h2>
+      <p class="step-subtitle">Review everything carefully before you submit.</p>
+      <div class="review-grid" id="reviewSummary"></div>
+      <div class="cert-box">
+        ✅ By clicking submit, you certify that all information provided is true and correct. Remember to bring your physical documents to the school registrar's office.
+      </div>
+      <div class="btn-row btn-row-center">
+        <button class="btn-ghost" id="back3">← Back</button>
+        <button class="btn-success btn-large" id="submitBtn">Submit Registration ✓</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SUCCESS -->
+  <div id="successScreen">
+    <div class="success-top">
+      <div class="check-ring">✓</div>
+      <h2>Registration Submitted!</h2>
+      <p>Your application has been successfully recorded in our system.</p>
+    </div>
+    <div class="success-body">
+      <p style="color:#64748b;font-size:0.9rem;margin-bottom:4px;">Your reference number is:</p>
+      <div class="ref-box">
+        <div class="ref-label">Reference Number</div>
+        <div class="ref-code" id="refNumber"></div>
+      </div>
+      <div class="next-steps-box">
+        <div class="ns-title">📋 What to do next</div>
+        <div class="ns-item"><div class="ns-num">1</div><span>Screenshot or write down your reference number above.</span></div>
+        <div class="ns-item"><div class="ns-num">2</div><span>Visit the school registrar's office in person.</span></div>
+        <div class="ns-item"><div class="ns-num">3</div><span>Bring your <strong>Grade 10 Report Card</strong> and <strong>Form 137</strong>.</span></div>
+      </div>
+      <button class="btn-primary btn-large" id="registerAnother">Register Another Student</button>
+    </div>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  © 2026 Concepcion National High School &nbsp;·&nbsp; Quality Education for All
+</footer>
+
+<script type="module">
+import { initializeApp }    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDoc, doc, serverTimestamp }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, signInAnonymously }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyAJZ1dibYjK9_SWVrdPl4NWiHPXNS1bz5Y",
+  authDomain:        "cnhs-student-files.firebaseapp.com",
+  projectId:         "cnhs-student-files",
+  storageBucket:     "cnhs-student-files.appspot.com",
+  messagingSenderId: "1065212176778",
+  appId:             "1:1065212176778:web:45746a21168cea1e1a0073"
+};
+
+const app  = initializeApp(firebaseConfig);
+const db   = getFirestore(app);
+const auth = getAuth(app);
+signInAnonymously(auth).catch(e => console.warn("Auth:", e.message));
+
+// ── CHECK ENROLLMENT STATUS ──────────────────────────────
+async function checkEnrollmentStatus() {
+  try {
+    const snap = await getDoc(doc(db, "settings", "testMode"));
+    if (snap.exists()) {
+      const data = snap.data();
+
+      // If explicitly closed, show closed screen immediately
+      if (data.active === false) {
+        showClosedScreen();
+        return;
+      }
+
+      // Load countdown end date
+      let endDate = null;
+      if (data.endDate?.toDate) endDate = data.endDate.toDate();
+      else if (data.endDate)   endDate = new Date(data.endDate);
+
+      if (endDate) {
+        if (endDate <= new Date()) {
+          // Already expired
+          showClosedScreen();
+          return;
+        }
+        startFormCountdown(endDate);
+      }
+    }
+  } catch (e) {
+    console.warn("Could not check enrollment status:", e.message);
+    // On error, allow enrollment to proceed
+  }
+}
+
+function showClosedScreen() {
+  // Hide all form steps and progress
+  document.querySelectorAll(".form-step").forEach(s => s.classList.remove("active"));
+  document.getElementById("progressWrap").style.display = "none";
+  document.getElementById("closedScreen").classList.add("active");
+
+  // Update countdown strip
+  const strip = document.getElementById("enrollmentCountdownStrip");
+  if (strip) {
+    strip.style.background = "rgba(220,38,38,0.2)";
+    strip.style.borderColor = "rgba(220,38,38,0.5)";
+    strip.querySelector(".cd-label").textContent = "🔴 Enrollment Closed";
+    ["D","H","M","S"].forEach(u => {
+      const el = document.getElementById("fcd-"+u);
+      if (el) el.textContent = "00";
+    });
+  }
+}
+
+// ── FORM COUNTDOWN (shown in header of enrollment page) ──
+let formCdInterval = null;
+function startFormCountdown(endDate) {
+  if (formCdInterval) clearInterval(formCdInterval);
+  formCdInterval = setInterval(() => tickFormCd(endDate), 1000);
+  tickFormCd(endDate);
+}
+
+function tickFormCd(endDate) {
+  const diff = endDate - new Date();
+  if (diff <= 0) {
+    clearInterval(formCdInterval);
+    showClosedScreen();
+    return;
+  }
+  const days  = Math.floor(diff / 86400000);
+  const hours = Math.floor((diff % 86400000) / 3600000);
+  const mins  = Math.floor((diff % 3600000)  / 60000);
+  const secs  = Math.floor((diff % 60000)    / 1000);
+  const set = (id, v) => {
+    const el = document.getElementById("fcd-"+id);
+    if (el) el.textContent = String(v).padStart(2,"0");
+  };
+  set("D", days); set("H", hours); set("M", mins); set("S", secs);
+
+  // Color change when < 1 day
+  const strip = document.getElementById("enrollmentCountdownStrip");
+  if (strip && diff < 86400000) {
+    strip.style.background = "rgba(220,38,38,0.2)";
+    strip.style.borderColor = "rgba(220,38,38,0.45)";
+  }
+}
+
+// Run status check on page load
+checkEnrollmentStatus();
+
+// ── MULTI-STEP FORM LOGIC ─────────────────────────────────
+let currentStep = 0;
+const steps    = document.querySelectorAll(".form-step");
+const progress = document.getElementById("progressBar");
+const pLabels  = [0,1,2,3].map(i => document.getElementById("ps"+i));
+
+function goTo(n) {
+  steps.forEach((s,i) => s.classList.toggle("active", i === n));
+  currentStep = n;
+  progress.style.width = (((n+1)/steps.length)*100)+"%";
+  pLabels.forEach((el,i) => el && el.classList.toggle("active", i <= n));
+  window.scrollTo({ top:0, behavior:"smooth" });
+  if (n === 3) populateReview();
+}
+
+function val(id) { return (document.getElementById(id)?.value||"").trim(); }
+
+function validateStep(i) {
+  if (i === 0) return true;
+  let ok = true;
+  steps[i].querySelectorAll("input[required],select[required]").forEach(el => {
+    if (!el.value.trim()) { el.classList.add("error"); ok = false; }
+    else el.classList.remove("error");
+    el.addEventListener("input", () => el.classList.remove("error"), { once:true });
+  });
+  if (!ok) alert("⚠️ Please fill in all required fields.");
+  return ok;
+}
+
+document.getElementById("startBtn").addEventListener("click",  () => goTo(1));
+document.getElementById("back1").addEventListener("click",     () => goTo(0));
+document.getElementById("next1").addEventListener("click",     () => { if (validateStep(1)) goTo(2); });
+document.getElementById("back2").addEventListener("click",     () => goTo(1));
+document.getElementById("next2").addEventListener("click",     () => { if (validateStep(2)) goTo(3); });
+document.getElementById("back3").addEventListener("click",     () => goTo(2));
+document.getElementById("submitBtn").addEventListener("click", submitRegistration);
+document.getElementById("registerAnother").addEventListener("click", () => location.reload());
+
+document.getElementById("lrn").addEventListener("input", e => {
+  e.target.value = e.target.value.replace(/\D/g,"").slice(0,12);
+});
+document.getElementById("zipCode").addEventListener("input", e => {
+  e.target.value = e.target.value.replace(/\D/g,"").slice(0,4);
+});
+
+function populateReview() {
+  const address = [val("street"),val("barangay"),val("municipality"),val("province"),val("zipCode")]
+    .filter(Boolean).join(", ");
+  const fields = [
+    ["Full Name",    val("fullName")],
+    ["Age",          val("age")],
+    ["Date of Birth",val("birthday")],
+    ["LRN",          val("lrn")],
+    ["Gender",       val("gender")],
+    ["Gmail",        val("gmail")],
+    ["Address",      address||"—"],
+    ["Strand",       val("strand")],
+    ["Grade Level",  val("gradeLevel")],
+    ["Statement",    val("interviewReason")||"—"]
+  ];
+  document.getElementById("reviewSummary").innerHTML = fields.map(([l,v]) =>
+    `<div class="review-row"><span class="review-label">${l}</span><span class="review-value">${v||"—"}</span></div>`
+  ).join("");
+}
+
+async function submitRegistration() {
+  const btn     = document.getElementById("submitBtn");
+  const overlay = document.getElementById("submitOverlay");
+  const msg     = document.getElementById("overlayMsg");
+  btn.disabled  = true;
+  btn.innerText = "Processing...";
+  overlay.classList.add("show");
+  msg.textContent = "Saving registration...";
+  try {
+    const ref = "CNHS-"+new Date().getFullYear()+"-"+Math.floor(100000+Math.random()*900000);
+    const address = [val("street"),val("barangay"),val("municipality"),val("province"),val("zipCode")]
+      .filter(Boolean).join(", ");
+    await addDoc(collection(db,"enrollments"), {
+      refNumber:    ref,
+      fullName:     val("fullName"),
+      age:          val("age"),
+      birthday:     val("birthday"),
+      lrn:          val("lrn"),
+      gender:       val("gender"),
+      gmail:        val("gmail"),
+      address,
+      street:       val("street"),
+      barangay:     val("barangay"),
+      municipality: val("municipality"),
+      province:     val("province"),
+      zipCode:      val("zipCode"),
+      strand:       val("strand"),
+      gradeLevel:   val("gradeLevel"),
+      reason:       val("interviewReason"),
+      reportCard:   null,
+      form137:      null,
+      submittedAt:  serverTimestamp(),
+      status:       "pending"
+    });
+    overlay.classList.remove("show");
+    steps.forEach(s => s.classList.remove("active"));
+    document.getElementById("progressWrap").style.display = "none";
+    document.getElementById("refNumber").textContent = ref;
+    document.getElementById("successScreen").classList.add("active");
+    window.scrollTo({ top:0, behavior:"smooth" });
+  } catch (err) {
+    overlay.classList.remove("show");
+    btn.disabled  = false;
+    btn.innerText = "Submit Registration ✓";
+    alert("❌ Submission failed.\n\n" + err.message);
+  }
+}
+</script>
+</body>
+</html>
